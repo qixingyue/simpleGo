@@ -1,0 +1,20 @@
+package main
+
+import (
+	"fmt"
+)
+
+func insertDb(tableName string, fieldValues ...interface{}) {
+	sql := "INSERT INTO `%s`"
+}
+
+func main() {
+
+	m := make(map[string]interface{})
+	m["hello"] = 3
+	m["world"] = "hello "
+	m["this"] = "new"
+
+	insertDb("show", m)
+
+}
