@@ -34,7 +34,6 @@ func RequestGet(url string, host string) string {
 }
 
 func RequestPost(url_string string, post_params string) string {
-	fmt.Printf(" %s : POST DATA : %s \n", time.Now(), post_params)
 	v, err := url.ParseQuery(post_params)
 	if err != nil {
 		fmt.Printf("%s : URL DATA Parse error \n", time.Now())

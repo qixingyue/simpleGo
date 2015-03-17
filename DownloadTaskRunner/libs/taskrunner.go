@@ -9,12 +9,13 @@ import (
 )
 
 type TaskRunningItem struct {
-	UniqueId string
-	Jsondata string
+	UniqueId   string
+	Jsondata   string
+	InsertTime string
 }
 
 type TaskRunner interface {
-	Init(jsonString string, uniqueId string)
+	Init(jsonString string, uniqueId string, insertTime string)
 	RealDoHandler() (bool, string)
 	QueueName() string
 	QueueSetName() string
@@ -71,7 +72,7 @@ func begin(dataChan chan *TaskRunningItem) {
 	for {
 		select {
 		case item := <-dataChan:
-			taskRunner.Init(item.Jsondata, item.UniqueId)
+			taskRunner.Init(item.Jsondata, item.UniqueId, item.InsertTime)
 			taskRunner.RealDoHandler()
 		default:
 			time.Sleep(1000 * time.Millisecond)

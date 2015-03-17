@@ -88,3 +88,14 @@ func LogPrintf(format string, args ...interface{}) {
 	message = fmt.Sprintf("%s:%s", time.Now().Local(), message)
 	R_L(message, false)
 }
+
+func ToUserString(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05")
+}
+
+func timeStringDiff(t string, e string) string {
+	tt, _ := time.Parse("2006-01-02 15:04:05", t)
+	et, _ := time.Parse("2006-01-02 15:04:05", e)
+	d := et.Sub(tt)
+	return d.String()
+}

@@ -11,14 +11,19 @@ type DownloadController struct {
 	beego.Controller
 }
 
-func (c *DownloadController) URLMapping() {
-	c.Mapping("Post", c.Post)
-}
+//func (c *downloadcontroller) urlmapping() {
+//	c.mapping("post", c.post)
+//}
 
 type DownloadResultInfo struct {
 	ErrorString string
 	RsyncPath   string
 	Result      string
+}
+
+// @router / [get]
+func (c *DownloadController) DefaultGet() {
+	c.Redirect("/public/", 301)
 }
 
 // @Title Post

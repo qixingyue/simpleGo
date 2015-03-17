@@ -9,14 +9,24 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var callback_url = "http://10.44.3.23:8080/download_callback.php"
+
+func torf(r bool) string {
+	if r {
+		return "T"
+	} else {
+		return "F"
+	}
+}
 
 type RealRunner struct {
 	UniqueId   string
 	Jsonstring string
 	Url        string
+	InsertTime string
 }
 
 type DownloadItem struct {
@@ -34,9 +44,10 @@ func (this *RealRunner) QueueSetName() string {
 	return "download_checkSet"
 }
 
-func (this *RealRunner) Init(jsonstring string, uniqueId string) {
+func (this *RealRunner) Init(jsonstring string, uniqueId string, insertTime string) {
 	this.UniqueId = uniqueId
 	this.Jsonstring = jsonstring
+	this.InsertTime = insertTime
 }
 
 func (this *RealRunner) RealDoHandler() (bool, string) {
@@ -48,7 +59,9 @@ func (this *RealRunner) RealDoHandler() (bool, string) {
 		return false, "data parse Error"
 	}
 	this.Url = di.Url
-	return this.downloadFile(di.Url, di.DownloadPath, di.AimMd5, di.RsyncPath, this.UniqueId)
+	res, message := this.downloadFile(di.Url, di.DownloadPath, di.AimMd5, di.RsyncPath, this.UniqueId)
+	fmt.Printf("%s\t%s\t%s\t%s\t%s\n", this.UniqueId, this.InsertTime, torf(res), ToUserString(time.Now()), timeStringDiff(this.InsertTime, ToUserString(time.Now())))
+	return res, message
 }
 
 func (this *RealRunner) downloadFile(download_url string, downloadFile string, aimMd5 string, rsyncPath string, uniqueId string) (bool, string) {
@@ -60,7 +73,6 @@ func (this *RealRunner) downloadFile(download_url string, downloadFile string, a
 	LogPrintf("Download AimMd5: %s \n", aimMd5)
 	downloadCmd := exec.Command("/data0/myget012/bin/mytget", "-n", strconv.Itoa(NumCPU), "-d", dirName, "-f", fileName, download_url)
 	downloadCmd.Stdin = strings.NewReader("")
-
 	var out bytes.Buffer
 	for try_times := 0; try_times < 3; try_times++ {
 		downloadCmd.Stdout = &out

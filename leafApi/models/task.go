@@ -6,6 +6,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type TaskModel struct {
@@ -19,8 +20,9 @@ type TaskModel struct {
 }
 
 type TaskWriteToRedis struct {
-	Uniqueid string
-	Jsondata string
+	Uniqueid   string
+	Jsondata   string
+	InsertTime string
 }
 
 func (this *TaskModel) Init(Uniqueid string, QueueName string, Jsondata string) (bool, string) {
@@ -61,6 +63,8 @@ func (this *TaskModel) WriteRedis() (bool, string) {
 	diwr := new(TaskWriteToRedis)
 	diwr.Uniqueid = this.Uniqueid
 	diwr.Jsondata = this.Jsondata
+	now_time := time.Now()
+	diwr.InsertTime = now_time.Format("2006-01-02 15:04:05")
 	ifilter := new(ItemFilter)
 	ifilterType := reflect.TypeOf(ifilter)
 
