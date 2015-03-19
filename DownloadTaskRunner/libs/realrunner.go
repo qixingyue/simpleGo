@@ -60,7 +60,11 @@ func (this *RealRunner) RealDoHandler() (bool, string) {
 	}
 	this.Url = di.Url
 	res, message := this.downloadFile(di.Url, di.DownloadPath, di.AimMd5, di.RsyncPath, this.UniqueId)
-	fmt.Printf("%s\t%s\t%s\t%s\t%s\n", this.UniqueId, this.InsertTime, torf(res), ToUserString(time.Now()), timeStringDiff(this.InsertTime, ToUserString(time.Now())))
+
+	reportFileName := "/data0/shareGo/logs/DownloadTask/run.log"
+	reportMessage := fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\n", this.UniqueId, di.DownloadPath, this.InsertTime, torf(res), ToUserString(time.Now()), timeStringDiff(this.InsertTime, ToUserString(time.Now())))
+	ReportFile(reportFileName, reportMessage)
+
 	return res, message
 }
 
@@ -107,7 +111,7 @@ func (this *RealRunner) downloadFailed(uniqueId string, cmdOutString string) {
 	m.Add("fpath", "")
 	m.Add("errorMessage", cmdOutString)
 	_ = RequestPost(callback_url, m.Encode())
-	RemoveUniqueId(uniqueId)
+	RemoveUniqueId(uniqueId, this)
 }
 
 func (this *RealRunner) checkMd5(fileName string, aimMd5 string) bool {

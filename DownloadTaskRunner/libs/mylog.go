@@ -20,6 +20,7 @@ var runnerId int
 
 func init() {
 	NumCPU = runtime.NumCPU()
+	//NumCPU = 1
 	if 2 <= len(os.Args) {
 		runnerId, _ = strconv.Atoi(os.Args[1])
 	} else {
@@ -98,4 +99,14 @@ func timeStringDiff(t string, e string) string {
 	et, _ := time.Parse("2006-01-02 15:04:05", e)
 	d := et.Sub(tt)
 	return d.String()
+}
+
+func ReportFile(fileName string, text string) {
+	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0x644)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	f.WriteString(text)
+	f.Sync()
 }

@@ -21,8 +21,6 @@ type TaskRunner interface {
 	QueueSetName() string
 }
 
-var taskRunner TaskRunner
-
 // 重写生成连接池方法
 func newPool() *redis.Pool {
 	return &redis.Pool{
@@ -50,7 +48,7 @@ func checkRedisCon(c redis.Conn) error {
 // 生成连接池
 var pool = newPool()
 
-func getItem() (*TaskRunningItem, error) {
+func getItem(taskRunner TaskRunner) (*TaskRunningItem, error) {
 	c := pool.Get()
 	defer c.Close()
 	downloadModel := new(TaskRunningItem)
@@ -69,6 +67,7 @@ func getItem() (*TaskRunningItem, error) {
 }
 
 func begin(dataChan chan *TaskRunningItem) {
+	taskRunner := new(RealRunner)
 	for {
 		select {
 		case item := <-dataChan:
@@ -80,13 +79,13 @@ func begin(dataChan chan *TaskRunningItem) {
 	}
 }
 
-func RemoveUniqueId(id string) {
+func RemoveUniqueId(id string, taskRunner TaskRunner) {
 	c := pool.Get()
 	defer c.Close()
 	c.Do("SREM", taskRunner.QueueSetName(), id)
 }
-func Run(tr TaskRunner, max int) {
-	taskRunner = tr
+func Run(max int) {
+	taskRunner := new(RealRunner)
 	runtime.GOMAXPROCS(NumCPU)
 	runtime.Gosched()
 
@@ -95,19 +94,19 @@ func Run(tr TaskRunner, max int) {
 		go begin(dataChan)
 	}
 
-	item, err := getItem()
+	item, err := getItem(taskRunner)
 
 	if max == -1 {
 		for {
 			if nil == err {
 				select {
 				case dataChan <- item:
-					item, err = getItem()
+					item, err = getItem(taskRunner)
 				default:
 					time.Sleep(1000 * time.Millisecond)
 				}
 			} else {
-				item, err = getItem()
+				item, err = getItem(taskRunner)
 			}
 		}
 	} else {
@@ -115,12 +114,12 @@ func Run(tr TaskRunner, max int) {
 			if nil == err {
 				select {
 				case dataChan <- item:
-					item, err = getItem()
+					item, err = getItem(taskRunner)
 				default:
 					time.Sleep(1000 * time.Millisecond)
 				}
 			} else {
-				item, err = getItem()
+				item, err = getItem(taskRunner)
 			}
 		}
 	}
