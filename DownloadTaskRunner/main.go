@@ -7,5 +7,5 @@ import (
 func main() {
 	ConfigManageEmail("xingyue@staff.sina.com.cn")
 	ConfigLogDir("/data0/shareGo/logs/DownloadTask/")
-	Run(new(RealRunner), -1)
+	Run(-1)
 }
