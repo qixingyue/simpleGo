@@ -61,7 +61,7 @@ func (this *RealRunner) RealDoHandler() (bool, string) {
 	this.Url = di.Url
 	res, message := this.downloadFile(di.Url, di.DownloadPath, di.AimMd5, di.RsyncPath, this.UniqueId)
 
-	reportFileName := "/data0/shareGo/logs/DownloadTask/run.log"
+	reportFileName := fmt.Sprintf("/data0/shareGo/logs/DownloadTask/run_%d.log", currentDayNum())
 	reportMessage := fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\n", this.UniqueId, di.DownloadPath, this.InsertTime, torf(res), ToUserString(time.Now()), timeStringDiff(this.InsertTime, ToUserString(time.Now())))
 	ReportFile(reportFileName, reportMessage)
 

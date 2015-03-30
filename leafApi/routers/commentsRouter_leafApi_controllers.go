@@ -50,6 +50,13 @@ func init() {
 
 	beego.GlobalControllerRouter["leafApi/controllers:DownloadController"] = append(beego.GlobalControllerRouter["leafApi/controllers:DownloadController"],
 		beego.ControllerComments{
+			"DefaultGet",
+			`/`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["leafApi/controllers:DownloadController"] = append(beego.GlobalControllerRouter["leafApi/controllers:DownloadController"],
+		beego.ControllerComments{
 			"AddPost",
 			`/download/add`,
 			[]string{"post"},
